@@ -167,9 +167,6 @@ def generate_screen1_scm(project_name, pseudocode=None):
     
     # Create the proper screen structure matching MIT App Inventor format exactly
     screen_data = {
-        "$Name": "Screen1",
-        "$Type": "Form", 
-        "$Version": "31",
         "authURL": ["ai2.appinventor.mit.edu"],
         "YaVersion": "232",
         "Source": "Form",
