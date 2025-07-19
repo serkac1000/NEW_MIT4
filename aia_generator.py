@@ -194,7 +194,7 @@ def generate_screen1_bky(project_name):
 
 def find_unknown_components(pseudocode: str, known_components=None):
     if known_components is None:
-        known_components = {"Button", "Label", "VerticalArrangement", "Notifier", "Screen", "ResetButton", "StatusLabel", "ButtonContainer"}
+        known_components = {"Button", "Label", "VerticalArrangement", "Notifier", "Screen", "ResetButton", "StatusLabel", "ButtonContainer", "TestLabel", "TestButton", "Form"}
     unknown = set()
     lines = pseudocode.splitlines()
     for line in lines:
