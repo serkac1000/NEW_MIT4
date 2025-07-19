@@ -107,33 +107,51 @@ def generate_aia_from_pseudocode(pseudocode: str) -> bytes:
 def generate_screen1_scm(project_name, pseudocode=None):
     # Parse pseudocode for components
     if pseudocode:
-        components = parse_pseudocode(pseudocode)
+        parsed_components = parse_pseudocode(pseudocode)
     else:
-        components = []
-    # Place all buttons/labels in a VerticalArrangement
-    va = {
-        "$Name": "ButtonContainer",
-        "$Type": "VerticalArrangement",
-        "Width": -2,
-        "Height": -2,
-        "AlignHorizontal": 3,
-        "AlignVertical": 2,
-        "Components": components
-    }
-    # Add a default StatusLabel and ResetButton if not present
-    names = [c["$Name"] for c in components]
-    if "StatusLabel" not in names:
-        status_label = {"$Name": "StatusLabel", "$Type": "Label", "Text": "No button clicked yet", "Width": -2, "FontSize": 18, "TextAlignment": 1}
-    else:
-        status_label = None
-    if "ResetButton" not in names:
-        reset_button = {"$Name": "ResetButton", "$Type": "Button", "Text": "Reset", "WidthPercent": 80, "Height": 50, "BackgroundColor": -65536, "TextColor": -1}
-    else:
-        reset_button = None
-    all_components = [va]
-    if status_label:
+        parsed_components = []
+    
+    # Clean up components - remove conflicting properties
+    cleaned_components = []
+    for comp in parsed_components:
+        # Remove Width if WidthPercent is set to avoid conflicts
+        if "WidthPercent" in comp and "Width" in comp:
+            del comp["Width"]
+        cleaned_components.append(comp)
+    
+    # Separate user-defined components from default ones
+    user_component_names = [c["$Name"] for c in cleaned_components]
+    
+    # Create components list for the screen
+    all_components = []
+    
+    # Add user components directly to the screen (not nested in container)
+    all_components.extend(cleaned_components)
+    
+    # Add default StatusLabel if not present
+    if "StatusLabel" not in user_component_names:
+        status_label = {
+            "$Name": "StatusLabel", 
+            "$Type": "Label", 
+            "Text": "No button clicked yet", 
+            "Width": -2, 
+            "FontSize": 18, 
+            "TextAlignment": 1
+        }
         all_components.append(status_label)
-    if reset_button:
+    
+    # Add default ResetButton if not present
+    if "ResetButton" not in user_component_names:
+        reset_button = {
+            "$Name": "ResetButton", 
+            "$Type": "Button", 
+            "Text": "Reset", 
+            "WidthPercent": 80, 
+            "Height": 50, 
+            "BackgroundColor": -65536, 
+            "TextColor": -1,
+            "FontSize": 16
+        }
         all_components.append(reset_button)
     json_block = '{\n  "$Name": "Screen1",\n  "$Type": "Form",\n  "$Version": 27,\n  "Uuid": 123456,\n  "Title": "12 Button App",\n  "AlignHorizontal": 3,\n  "AlignVertical": 2,\n  "BackgroundColor": -3355444,\n  "AppName": "' + project_name + '",\n  "Components": [\n'
     for i, comp in enumerate(all_components):
