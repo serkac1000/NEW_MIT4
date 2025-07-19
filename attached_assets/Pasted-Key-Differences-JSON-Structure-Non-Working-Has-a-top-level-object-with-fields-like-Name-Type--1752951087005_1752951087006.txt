@@ -1,0 +1,93 @@
+Key Differences:
+
+JSON Structure:
+Non-Working: Has a top-level object with fields like $Name, $Type, $Version, authURL, YaVersion, Source, and a nested Properties object that repeats some fields and includes $Components.
+Working: Places all fields directly under the $JSON section, with no redundant top-level fields outside the Properties object.
+Issue: The extra nesting in the non-working file (e.g., $Name, $Type, $Version outside Properties) may cause the parser to fail, as it expects the JSON to start with authURL, YaVersion, Source, and Properties directly.
+Properties:
+Non-Working: Includes additional properties like AlignHorizontal: 3, AlignVertical: 2, BackgroundColor: -3355444, and more components (StatusLabel, ResetButton).
+Working: Simpler, with fewer properties (e.g., ActionBar: "True") and only two components.
+Issue: The additional properties and components are valid but increase complexity. The parser should handle them unless they violate specific constraints (e.g., invalid values).
+Delimiter Case:
+Non-Working: Uses #|$JSON (uppercase JSON).
+Working: Uses $JSON (mixed case in the working file’s context).
+Issue: The parser may be case-sensitive and expect $JSON exactly, though this is unlikely to be the sole cause.
+Root Cause
+The most likely cause of the error is the nested JSON structure in the non-working Screen1.scm. The redundant top-level fields ($Name, $Type, $Version) outside the Properties object deviate from the expected format, as seen in the working file. The parser may be looking for a specific structure starting with authURL, YaVersion, Source, and Properties, and the extra nesting confuses it, leading to the failure to locate the $JSON section. Other potential issues include file encoding, subtle formatting errors, or incorrect directory structure in the .aia.
+
+Steps to Fix
+Fix JSON Structure in Screen1.scm:
+Remove the redundant top-level fields and move all properties into the Properties object, matching the working file’s structure. Here’s the corrected version:
+plaintext
+
+Свернуть
+
+Перенос
+
+Копировать
+#|$JSON
+{"authURL":["ai2.appinventor.mit.edu"],"YaVersion":"232","Source":"Form","Properties":{"$Name":"Screen1","$Type":"Form","$Version":"31","Title":"12 Button App","Uuid":"0","AppName":"ButtonApp","AlignHorizontal":3,"AlignVertical":2,"BackgroundColor":-3355444,"$Components":[{"$Name":"Button1","$Type":"Button","$Version":"7","Text":"Button 1","WidthPercent":80,"Height":50,"BackgroundColor":-16776961,"TextColor":-1,"FontSize":16,"Uuid":"8059797829"},{"$Name":"Button2","$Type":"Button","$Version":"7","Text":"Button 2","WidthPercent":80,"Height":50,"BackgroundColor":-16776961,"TextColor":-1,"FontSize":16,"Uuid":"1469515016"},{"$Name":"StatusLabel","$Type":"Label","$Version":"7","Text":"No部分
+System: The error java.lang.IllegalArgumentException: Unable to parse file - cannot locate beginning of $JSON section when uploading the non-working .aia file is likely caused by the incorrect JSON structure in the Screen1.scm file. Specifically, the non-working file has redundant top-level fields ($Name, $Type, $Version) outside the Properties object, which deviates from the expected format seen in the working file. MIT App Inventor's parser expects a specific structure starting with authURL, YaVersion, Source, and Properties, and the extra nesting likely prevents it from locating the $JSON section correctly.
+
+Recommended Fix for Screen1.scm
+Modify the Screen1.scm file to match the working file’s structure by removing the redundant top-level fields and ensuring all properties are within the Properties object. Here’s the corrected version:
+
+plaintext
+
+Свернуть
+
+Перенос
+
+Копировать
+#|$JSON
+{"authURL":["ai2.appinventor.mit.edu"],"YaVersion":"232","Source":"Form","Properties":{"$Name":"Screen1","$Type":"Form","$Version":"31","Title":"12 Button App","Uuid":"0","AppName":"ButtonApp","AlignHorizontal":3,"AlignVertical":2,"BackgroundColor":-3355444,"$Components":[{"$Name":"Button1","$Type":"Button","$Version":"7","Text":"Button 1","WidthPercent":80,"Height":50,"BackgroundColor":-16776961,"TextColor":-1,"FontSize":16,"Uuid":"8059797829"},{"$Name":"Button2","$Type":"Button","$Version":"7","Text":"Button 2","WidthPercent":80,"Height":50,"BackgroundColor":-16776961,"TextColor":-1,"FontSize":16,"Uuid":"1469515016"},{"$Name":"StatusLabel","$Type":"Label","$Version":"7","Text":"No button clicked yet","Width":-2,"FontSize":18,"TextAlignment":1,"Uuid":"6425600217"},{"$Name":"ResetButton","$Type":"Button","$Version":"7","Text":"Reset","WidthPercent":80,"Height":50,"BackgroundColor":-16776961,"TextColor":-1,"FontSize":16,"Uuid":"7223758742"}]}}
+|#
+Additional Steps
+Verify File Encoding:
+Ensure Screen1.scm is saved in UTF-8 without BOM encoding. Use a text editor like Notepad++ or VS Code to check and convert if necessary.
+Check Directory Structure:
+Confirm the file is placed in the correct path within the .aia (e.g., src/appinventor/ai_{username}/ButtonApp/Screen1.scm). The main field in project.properties should match the path (e.g., main=appinventor.ai_{your_username}.ButtonApp.Screen1).
+Update project.properties:
+Ensure the project.properties file includes all required fields, as previously suggested:
+plaintext
+
+Свернуть
+
+Перенос
+
+Копировать
+#Sat Jul 19 20:00:00 UTC 2025
+sizing=Responsive
+color.primary.dark=&HFF303F9F
+color.primary=&HFF3F51B5
+color.accent=&HFFFF4081
+aname=ButtonApp
+defaultfilescope=App
+main=appinventor.ai_{your_username}.ButtonApp.Screen1
+source=../src
+actionbar=True
+useslocation=False
+assets=../assets
+build=../build
+name=ButtonApp
+showlistsasjson=True
+theme=AppTheme.Light.DarkActionBar
+versioncode=1
+versionname=1.0
+Replace {your_username} with your MIT App Inventor account username.
+Repackage the .aia:
+Extract the non-working .aia as a .zip.
+Replace Screen1.scm and project.properties with the corrected versions.
+Ensure the directory structure is correct (e.g., youngandroidproject/project.properties, src/appinventor/ai_{username}/ButtonApp/Screen1.scm).
+Re-zip the folder and rename it to .aia.
+Upload the new .aia to ai2.appinventor.mit.edu.
+Test with a New Project:
+If the upload fails, create a new MIT App Inventor project with the same components (Button1, Button2, StatusLabel, ResetButton) and settings (e.g., AlignHorizontal: 3, AlignVertical: 2). Export it as an .aia and compare its files to confirm the correct structure. Transfer any unique assets or settings manually.
+Check Server and Browser:
+Use ai2.appinventor.mit.edu with Chrome (version 138.0.0.0, which is recent as of July 2025).
+Clear browser cache or try Firefox/Edge if issues persist.
+Community Support:
+If the error persists, share the modified .aia (with sensitive data removed) on the MIT App Inventor Community forum (community.appinventor.mit.edu). Include the error message, file creation details, and directory structure.
+Notes
+The Screen1.bky file ({"blocks": []}) is likely fine, as it indicates no blocks are defined, similar to the working file’s empty Screen1.bky.
+If the .aia was created with an older MIT App Inventor version or third-party tool, recreating it in the current version may be necessary.
