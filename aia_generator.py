@@ -2,6 +2,7 @@ import zipfile
 from io import BytesIO
 import re
 import json
+import random
 
 def parse_pseudocode(pseudocode: str):
     """
@@ -113,7 +114,6 @@ def generate_aia_from_pseudocode(pseudocode: str) -> bytes:
     return mem_zip.read()
 
 def generate_screen1_scm(project_name, pseudocode=None):
-    import random
     
     # Parse pseudocode for components
     if pseudocode:
