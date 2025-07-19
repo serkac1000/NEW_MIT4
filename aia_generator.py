@@ -153,14 +153,22 @@ def generate_screen1_scm(project_name, pseudocode=None):
             "FontSize": 16
         }
         all_components.append(reset_button)
-    json_block = '{\n  "$Name": "Screen1",\n  "$Type": "Form",\n  "$Version": 27,\n  "Uuid": 123456,\n  "Title": "12 Button App",\n  "AlignHorizontal": 3,\n  "AlignVertical": 2,\n  "BackgroundColor": -3355444,\n  "AppName": "' + project_name + '",\n  "Components": [\n'
-    for i, comp in enumerate(all_components):
-        json_block += '    ' + json.dumps(comp, ensure_ascii=False)
-        if i < len(all_components) - 1:
-            json_block += ',\n'
-        else:
-            json_block += '\n'
-    json_block += '  ]\n}'
+    # Create the proper screen structure
+    screen_data = {
+        "$Name": "Screen1",
+        "$Type": "Form", 
+        "$Version": 27,
+        "Uuid": 123456,
+        "Title": "12 Button App",
+        "AlignHorizontal": 3,
+        "AlignVertical": 2,
+        "BackgroundColor": -3355444,
+        "AppName": project_name,
+        "Components": all_components
+    }
+    
+    # Format as proper JSON with indentation
+    json_block = json.dumps(screen_data, indent=2, ensure_ascii=False)
     scm = "#|$JSON\n" + json_block + "|#"
     scm = scm.strip('\r\n')
     if not scm.endswith('|#'):
